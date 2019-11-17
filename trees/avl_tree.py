@@ -16,6 +16,44 @@ class AVLTree:
         else:
             return self._insert(root, new_n)
 
+    def delete(self, root, key):
+        new_n = None
+        print(root.data)
+        if key == root.data:
+            # one or more of the children is None:
+            if not root.left:
+                temp = root.right
+                root = None
+                return temp
+            if not root.right:
+                temp = root.left
+                root = None
+                return temp
+
+            # both children are not None
+            successor = self.min_val(root.right)
+            root.data = successor.data
+            root.right = self.delete(root.right, successor.data)
+            new_n = root.right
+
+        elif key > root.data:
+            root.right = self.delete(root.right, key)
+            new_n = root.right
+
+        elif key <= root.data:
+            root.left = self.delete(root.left, key)
+            new_n = root.left
+
+        root.height = 1 + max(self.getHeight(root.left), self.getHeight(root.right))
+        return self._rebalance(root, new_n)
+
+    @staticmethod
+    def min_val(node):
+        while node.left is not None:
+            node = node.left
+
+        return node
+
     def _insert(self, root, n):
         if root.data < n.data:
             if not root.right:
@@ -38,7 +76,7 @@ class AVLTree:
         if balance > 1:
             print("left !!!!! ", n.data, " **** ", new_n.data)
             # left left:
-            if new_n.data < n.left.data:
+            if not new_n or new_n.data < n.left.data:
                 print("left left")
                 return self.right_rotate(n)
             # left right:
@@ -49,9 +87,9 @@ class AVLTree:
 
         # right subtree of n is bigger than left
         elif balance < -1:
-            print("right !!!!")
+            print("right !!!! ", new_n, n.right)
             # right right
-            if new_n.data > n.right.data:
+            if not new_n or new_n.data > n.right.data:
                 return self.left_rotate(n)
             # right left
             else:
@@ -106,5 +144,8 @@ root = t.insert(root, 8)
 root = t.insert(root, 20)
 root = t.insert(root, 7)
 root = t.insert(root, 9)
-print(root.data)
+t.in_order(root)
+root = t.delete(root, 6)
+root = t.delete(root, 7)
+root = t.delete(root, 4)
 t.in_order(root)
