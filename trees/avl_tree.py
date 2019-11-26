@@ -54,6 +54,7 @@ class AVLTree:
 
         return node
 
+    # NOTE: there could be a bug in here!!!
     def _insert(self, root, n):
         if root.data < n.data:
             if not root.right:
